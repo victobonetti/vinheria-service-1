@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'your-registry/vinheria-service-1:latest'
+        IMAGE_NAME = 'victobonetti/vinheria-service-1:latest'
         KUBECONFIG_CREDENTIAL_ID = 'kubeconfig-credentials-id'
     }
 
