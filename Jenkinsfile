@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     bat  """
-                    kubectl set image deployment/${IMAGE_NAME.split('/')[1]} ${IMAGE_NAME.split('/')[1]}=${IMAGE_NAME}:${TAG} --record
+                    kubectl set image deployment/${IMAGE_NAME.split('/')[1]} ${IMAGE_NAME.split('/')[1]}=${IMAGE_NAME}:${TAG}
                     """
                 }
             }
