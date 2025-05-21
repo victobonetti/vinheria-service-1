@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'victobonetti/vinheria-service-1:latest'
-        KUBECONFIG_CREDENTIAL_ID = 'kubeconfig-credentials-id'
+        IMAGE_NAME = "victobonetti/vinheria-service-1"
+        TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -16,27 +16,28 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}")
+                    sh "docker build -t ${IMAGE_NAME}:${TAG} ."
                 }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry([credentialsId: 'docker-registry-creds', url: '']) {
-                    script {
-                        docker.image("${IMAGE_NAME}").push()
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${IMAGE_NAME}:${TAG}
+                    """
                 }
             }
         }
 
-        stage('Refresh Kubernetes Pod') {
+        stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL_ID}", variable: 'KUBECONFIG')]) {
-                    sh '''
-                    kubectl --kubeconfig=$KUBECONFIG delete pod -l app=dummy-node-app
-                    '''
+                script {
+                    sh """
+                    kubectl set image deployment/${IMAGE_NAME.split('/')[1]} ${IMAGE_NAME.split('/')[1]}=${IMAGE_NAME}:${TAG} --record
+                    """
                 }
             }
         }
