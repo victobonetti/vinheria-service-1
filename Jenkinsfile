@@ -16,7 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+                    bat  "docker build -t ${IMAGE_NAME}:${TAG} ."
                 }
             }
         }
@@ -24,7 +24,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
+                    bat  """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push ${IMAGE_NAME}:${TAG}
                     """
@@ -35,7 +35,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh """
+                    bat  """
                     kubectl set image deployment/${IMAGE_NAME.split('/')[1]} ${IMAGE_NAME.split('/')[1]}=${IMAGE_NAME}:${TAG} --record
                     """
                 }
