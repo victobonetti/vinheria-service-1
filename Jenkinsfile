@@ -16,7 +16,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat  "docker build -t ${IMAGE_NAME}:${TAG} ."
+                    bat """
+                        docker build -t %IMAGE_NAME%:%TAG% -t %IMAGE_NAME%:latest .
+                    """
                 }
             }
         }
@@ -24,22 +26,21 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat  """
+                    bat """
                         docker login -u %DOCKER_USER% -p %DOCKER_PASS%
                         docker push %IMAGE_NAME%:%TAG%
+                        docker push %IMAGE_NAME%:latest
                     """
                 }
             }
         }
 
-
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    bat  """
-                    kubectl set image deployment/${IMAGE_NAME.split('/')[1]} ${IMAGE_NAME.split('/')[1]}=${IMAGE_NAME}:${TAG}
-                    """
-                }
+                bat """
+                    kubectl set image deployment/vinheria-service-1 vinheria-service-1=%IMAGE_NAME%:latest --record
+                    kubectl rollout status deployment/vinheria-service-1
+                """
             }
         }
     }
