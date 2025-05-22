@@ -6,8 +6,13 @@ WORKDIR /app
 
 # Copy files
 COPY package*.json ./
-RUN npm install
+
+# Install pnpm
+RUN npm install -g pnpm
+
+RUN pnpm install
 COPY . .
 
+
 # Start the app
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]
