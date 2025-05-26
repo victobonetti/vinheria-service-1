@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    tools {
+        nodejs 'NodeJS'
+    }
 
     environment {
         IMAGE_NAME = "victobonetti/vinheria-service-1"
