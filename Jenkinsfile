@@ -1,13 +1,7 @@
 pipeline {
     agent any
-    
-    tools {
-        nodejs 'NodeJS'
-    }
 
     environment {
-        IMAGE_NAME = "victobonetti/vinheria-service-1"
-        TAG = "${env.BUILD_NUMBER}"
         PATH = "/usr/local/bin:${env.PATH}"
         PUBLISH_DIR = "publish"
     }
