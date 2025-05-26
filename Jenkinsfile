@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/usr/local/bin:${env.PATH}"
+        PATH = "/Users/gabrielbianchi/.nvm/versions/node/v22.15.0/bin:${env.PATH}"
         PUBLISH_DIR = "publish"
     }
 
