@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "victobonetti/vinheria-service-1"
         TAG = "${env.BUILD_NUMBER}"
+        PATH = "/opt/homebrew/bin:$PATH"
     }
 
     stages {
